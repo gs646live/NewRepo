@@ -57,7 +57,7 @@ body{
 }
 
 #header nav{
-    height: 100vh;
+    height: 50vh;
 }
 #header .site-title .navbar-brand{
     letter-spacing: 2px;
