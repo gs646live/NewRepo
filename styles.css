@@ -1,80 +1,87 @@
 @import url('https://fonts.googleapis.com/css?family=Oswald|Rambla|Staatliches&display=swap');
 
-body{
+body {
     margin: 0;
     padding: 0;
 }
 
-:root{
+:root {
     --color-black: #000000;
     --color-white: #ffffff;
     --color-border: #ffffff34;
     --font-gar: 'Staatliches', cursive;
-    --font-ubu:  'Oswald', sans-serif;
+    --font-ubu: 'Oswald', sans-serif;
     --font-ram: 'Rambla', sans-serif;
 }
 
 /* global classes */
-.font-gar{
+.font-gar {
     font: normal 400 18px var(--font-gar);
 }
-.font-ubu{
+
+.font-ubu {
     font: normal 300 18px var(--font-ubu);
 }
-.font-ram{
+
+.font-ram {
     font: normal bold 18px var(--font-ram);
 }
 
-.font-size-40{
+.font-size-40 {
     font-size: 40px;
 }
-.font-size-34{
+
+.font-size-34 {
     font-size: 34px;
 }
-.font-size-27{
+
+.font-size-27 {
     font-size: 27px;
 }
-.font-size-20{
+
+.font-size-20 {
     font-size: 20px;
 }
-.font-size-16{
+
+.font-size-16 {
     font-size: 16px;
 }
 
-.bgcolor-black{
+.bgcolor-black {
     background-color: var(--color-black);
 }
 
 /* #global classes */
 
-#header{
+#header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    z-index:1;
+    z-index: 1;
     transition: left .5s ease;
 }
 
-#header nav{
+#header nav {
     height: 100vh;
 }
-#header .site-title .navbar-brand{
+
+#header .site-title .navbar-brand {
     letter-spacing: 2px;
     color: var(--color-white);
 }
 
-#header .nav-link{
+#header .nav-link {
     margin: .7rem 1rem;
     border-bottom: 1px solid var(--color-border);
     text-transform: uppercase;
 }
 
-#header .nav-link:hover{
+#header .nav-link:hover {
     color: var(--color-white) !important;
 }
 
-#header .toggle-button{
+#header .toggle-button {
     background: none;
     color: var(--color-black);
     position: fixed;
@@ -83,14 +90,14 @@ body{
     border: 1px solid var(--color-border);
 }
 
-.toggle-left{
+.toggle-left {
     left: 0 !important;
     width: 1000px !important;
 }
 
 /* site-main */
 
-.site-banner .banner-area{
+.site-banner .banner-area {
     background: url(./assets/Banner_image.jpg) no-repeat;
     background-size: cover;
     width: 100%;
@@ -98,7 +105,7 @@ body{
     position: relative;
 }
 
-.site-banner .banner-area .author{
+.site-banner .banner-area .author {
     margin: 0;
     position: absolute;
     top: 45%;
@@ -106,7 +113,7 @@ body{
     transform: translate(-60%, -20%);
 }
 
-.site-banner .banner-area .author .author-img{
+.site-banner .banner-area .author .author-img {
     width: 200px;
     height: 200px;
     border-radius: 50%;
@@ -116,42 +123,45 @@ body{
     background-position: 40% 0;
 }
 
-.skill .bars p, .site-content .skill .bars span{
+.skill .bars p,
+.site-content .skill .bars span {
     line-height: 10px;
 }
 
 #footer form .row .col input[type="text"],
 #footer form .row .col input[type="email"],
-#footer form textarea{
+#footer form textarea {
     border: none;
     border-radius: 0;
     border-bottom: 1px solid gray;
     padding: 1.5rem 1rem;
 }
 
-@media screen and (min-width: 768px){
-    .toggle-button{
+@media screen and (min-width: 768px) {
+    .toggle-button {
         display: none;
     }
-    #header{
-        z-index:0;
+
+    #header {
+        z-index: 0;
     }
 }
+
 #testimonials {
-  padding: 7% 15%;
-  text-align: center;
-  background-color: #87aed4;
-  color: #fff;
+    padding: 7% 15%;
+    text-align: center;
+    background-color: #87aed4;
+    color: #fff;
 }
 
 .testimonial-image {
-  width: 50%;
-  border-radius: 50%;
-  margin: 20px;
+    width: 50%;
+    border-radius: 50%;
+    margin: 20px;
 }
 
 .carousel-item {
-  padding: 7% 15%;
+    padding: 7% 15%;
 }
 
 
