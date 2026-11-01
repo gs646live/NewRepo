@@ -57,17 +57,23 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    z-index: 1;
+    width: 25%;
+    z-index: 1030;
     transition: left .5s ease;
 }
 
 #header nav {
     height: 100vh;
+    overflow-y: auto;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
 }
 
 #header .site-title .navbar-brand {
     letter-spacing: 2px;
+    white-space: normal;
+    overflow-wrap: anywhere;
     color: var(--color-white);
 }
 
@@ -81,8 +87,9 @@ body {
     color: var(--color-white) !important;
 }
 
-#header .toggle-button {
-    background: none;
+.toggle-button {
+    background: white;
+    z-index: 1040;
     color: var(--color-black);
     position: fixed;
     top: 25px;
@@ -92,7 +99,6 @@ body {
 
 .toggle-left {
     left: 0 !important;
-    width: 1000px !important;
 }
 
 /* site-main */
@@ -143,7 +149,7 @@ body {
     }
 
     #header {
-        z-index: 0;
+        visibility: visible;
     }
 }
 
@@ -166,3 +172,24 @@ body {
 
 
 /* #site-main */
+
+@media screen and (max-width: 767.98px) {
+    #header {
+        width: min(20rem, 100%);
+        left: -100%;
+        visibility: hidden;
+    }
+
+    #header.toggle-left {
+        visibility: visible;
+    }
+
+    #header .site-title {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    #header .navbar-brand {
+        font-size: 2rem;
+    }
+}
