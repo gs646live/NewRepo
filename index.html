@@ -6,20 +6,18 @@
     <title>Red Button Images</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet" href="./styles.css">
-    <link rel="shortcut icon" type="image/png" href=".assets/favicon.ico"/>
+    <link rel="shortcut icon" type="image/png" href="./assets/favicon.ico"/>
 </head>
 <body>
 
     <!-- header area -->
     <header id="header">
         <div class="row m-0">
-            <div class="col-3 bgcolor-black">
-                <nav class="navbar navbar-toggleable-md fixed-top">
+            <div class="col-12 bgcolor-black">
+                <nav id="main-navigation" class="navbar" aria-label="Main navigation">
                     <div class="site-title text-center text-light py-5">
                         <a href="#" class="navbar-brand font-gar font-size-40">Red Button Images</a>
                         <p class="description text-uppercase font-gar">Greg Samuel</p>
-                        <button id="nav-btn"class="navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarDiv" aria-expanded="false" aria-label="Toggle navigation">
-                        </button>
                     </div>
                     <div class="d-flex flex-column">
                         <a href="#home" class="nav-item nav-link text-white-50 font-gar font-size-16 active">Home</a>
@@ -33,9 +31,8 @@
                 </nav>
             </div>
         </div>
-        <button class="toggle-button"><span class="fas fa-bars fa-2x"></span></button>
-
     </header>
+    <button class="toggle-button" type="button" aria-controls="main-navigation" aria-expanded="false" aria-label="Open navigation"><span class="fas fa-bars fa-2x" aria-hidden="true"></span></button>
     <!-- #header area -->
 
     <main id="site-main">
@@ -77,13 +74,13 @@
                                         <p class="font-ram"><b>Phone: </b><span class="text-black-50">+1 347-560-1853</span></p>
                                     </div>
                                     <div class="d-flex flex-column">
-                                        <p class="font-ram"><b>Mail: </b><span class="text-black-50">gyalis@gmail.com.com</span></p>
+                                        <p class="font-ram"><b>Mail: </b><span class="text-black-50"><a href="mailto:gyalis73@gmail.com">gyalis73@gmail.com</a></span></p>
                                         <p class="font-ram"><b>Instagram: </b><span class="text-black-50">@gregsamuelphotography</span></p>
                                     </div>
                                 </div>
-                                <a href=#footer><button class="btn btn-dark text-uppercase mr-3">Hire ME</button></a>
+                                <a href="#footer" class="btn btn-dark text-uppercase mr-3">Hire ME</a>
                                 </div>
-
+                        </div>
                     </section>
                 <!-- #about me area -->
 
@@ -136,26 +133,30 @@
                         <section id="testimonials">
     <div id="testimonial-carousel" class="carousel slide" data-ride="false">
       <div class="carousel-inner">
-        <div class="carousel-item active" <h2>"SamCam Photography was phenomenal at our wedding."</h2>
+        <div class="carousel-item active">
+          <h2 class="testimonial-text">"SamCam Photography was phenomenal at our wedding."</h2>
           <img class="testimonial-image" src="./assets/reffer/ref1.jpg" alt="wedding">
           <em>Thandi, New York</em>
         </div>
-        <div class="carousel-item" <h2 class="testimonial-text">Greg and his team helped me to make a meaningful keepsake for my husband stationed overseas.</h2>
+        <div class="carousel-item">
+          <h2 class="testimonial-text">Greg and his team helped me to make a meaningful keepsake for my husband stationed overseas.</h2>
           <img class="testimonial-image" src="./assets/reffer/ref3.jpg" alt="lady-profile">
           <em>Beverly, Illinois</em>
         </div>
-<div class="carousel-item" <h2 class="testimonial-text">Greg Samuel Photography took great pictures of my son's first communion.</h2>
+<div class="carousel-item">
+          <h2 class="testimonial-text">Greg Samuel Photography took great pictures of my son's first communion.</h2>
           <img class="testimonial-image" src="./assets/reffer/ref2.jpg" alt="lady-profile">
           <em>Delia, Pennsylvania</em>
         </div>
 
-        <div class="carousel-item" </div>
         </div>
         <a class="carousel-control-prev" href="#testimonial-carousel" role="button" data-slide="prev">
-          <span class="carousel-control-prev-icon"></span>
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous testimonial</span>
         </a>
         <a class="carousel-control-next" href="#testimonial-carousel" role="button" data-slide="next">
-          <span class="carousel-control-next-icon"></span>
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next testimonial</span>
         </a>
       </div>
 
@@ -267,7 +268,7 @@
                                 <h6 class="text-uppercase font-ram font-size-16 text-dark">SamCam Photography Inc.</h6>
                                 <p class="font-ram w-50 font-size-16 text-black-50">East Stroudsburg, PA</p>
                                 <p class="font-ram font-size-16 text-black-50 pt-3">PHONE: +1 347-560-1853</p>
-                                <p class="font-ram font-size-16 text-black-50">EMAIL: gyalis73@gmail.com</p>
+                                <p class="font-ram font-size-16 text-black-50">EMAIL: <a href="mailto:gyalis73@gmail.com">gyalis73@gmail.com</a></p>
                                 <p class="font-ram font-size-16 text-black-50">ADDRESS: East Stroudsburg, PA, 18301 US.</p>
                             </div>
                             <div class="col-sm-6 py-4 px-4">
@@ -287,7 +288,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-4 my-5 text-center">
-                                <a href="https://www.facebook.com/samcamfoto"<span class="mr-3"><i class="fab fa-facebook-f"></i></span></a>
+                                <a href="https://www.facebook.com/samcamfoto"><span class="mr-3"><i class="fab fa-facebook-f"></i></span></a>
                                 <a href="https://twitter.com/nycvi73/"><span class="mr-3"><i class="fab fa-twitter"></i></span></a>
                                 <a href="https://www.instagram.com/gregsamuelphotography"><span class="mr-3"><i class="fab fa-instagram"></i></span></a>
                             </div>
