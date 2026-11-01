@@ -48,9 +48,23 @@ var typed_2 = new Typed('#typed_2', {
 
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+        // Bootstrap owns carousel and other data-driven controls.
+        if (this.hasAttribute('data-slide') || this.hasAttribute('data-toggle')) {
+            return;
+        }
 
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
+        var href = this.getAttribute('href');
+        if (!href || href === '#') {
+            return;
+        }
+
+        var target = document.getElementById(href.slice(1));
+        if (!target) {
+            return;
+        }
+
+        e.preventDefault();
+        target.scrollIntoView({
             behavior: 'smooth'
         });
     });
