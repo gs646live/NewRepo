@@ -1,32 +1,34 @@
-$(document).ready(function (e) {
-    $win = $(window);
-    $navbar = $('#header');
-    $toggle = $('.toggle-button');
-    var width = $navbar.width();
-    toggle_onclick($win, $navbar, width);
+$(document).ready(function () {
+    var $navbar = $('#header');
+    var $toggle = $('.toggle-button');
 
-    // resize event
-    $win.resize(function () {
-        toggle_onclick($win, $navbar, width);
+    function setMenuOpen(open) {
+        $navbar.toggleClass('toggle-left', open);
+        $toggle.attr('aria-expanded', String(open));
+        $toggle.attr('aria-label', open ? 'Close navigation' : 'Open navigation');
+    }
+
+    $toggle.on('click', function () {
+        setMenuOpen(!$navbar.hasClass('toggle-left'));
     });
 
-    $toggle.click(function (e) {
-        $navbar.toggleClass("toggle-left");
-    })
+    $(window).on('resize', function () {
+        if (window.matchMedia('(min-width: 768px)').matches) {
+            setMenuOpen(false);
+        }
+    });
 
+    $navbar.find('a[href^="#"]').on('click', function () {
+        setMenuOpen(false);
+    });
+
+    $(document).on('keydown', function (event) {
+        if (event.key === 'Escape' && $navbar.hasClass('toggle-left')) {
+            setMenuOpen(false);
+            $toggle.trigger('focus');
+        }
+    });
 });
-
-function toggle_onclick($win, $navbar, width) {
-    if ($win.width() <= 768) {
-        $navbar.css({
-            left: `-${width}px`
-        });
-    } else {
-        $navbar.css({
-            left: '0px'
-        });
-    }
-}
 
 var typed = new Typed('#typed', {
     strings: [
