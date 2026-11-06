@@ -41,13 +41,18 @@ async function connectInBackground() {
 }
 
 const app = createApp();
-const server = app.listen(env.port, () => {
+// Express 5 also calls this callback with the error when listening fails (handled below).
+const server = app.listen(env.port, (error) => {
+  if (error) return;
   console.info(`[api] 紫 Murasaki API listening on http://localhost:${env.port}`);
   connectInBackground().catch((error) => console.error('[db] setup failed:', error.message));
 });
 server.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
-    console.error(`[api] Port ${env.port} is already in use. Stop the other process or set PORT in server/.env.`);
+    const mac = process.platform === 'darwin' && env.port === 5000
+      ? ' On macOS, port 5000 is used by AirPlay Receiver — use PORT=3001.'
+      : '';
+    console.error(`[api] Port ${env.port} is already in use. Set a different PORT in server/.env.${mac}`);
   } else {
     console.error('[api] failed to start:', error.message);
   }

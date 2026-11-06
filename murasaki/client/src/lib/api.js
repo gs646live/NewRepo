@@ -6,7 +6,8 @@ const BASE = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
 
 const API_UNREACHABLE =
   'Can’t reach the Murasaki API. Check the terminal running "npm run dev" for [api] or [db] errors — ' +
-  'usually PostgreSQL needs to be started first ("docker compose up -d db" in the murasaki folder).';
+  'usually PostgreSQL needs to be started first ("docker compose up -d db" in the murasaki folder), ' +
+  'or the API port is taken by another program (on a Mac, set PORT=3001 in server/.env, not 5000).';
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -30,8 +31,9 @@ async function request(path, { method = 'GET', body, signal } = {}) {
   }
   const data = response.status === 204 ? null : await response.json().catch(() => null);
   if (!response.ok) {
-    // A 5xx with no JSON body comes from the dev proxy or a gateway: the API itself isn't answering.
-    if (response.status >= 500 && !data) throw new ApiError(API_UNREACHABLE, response.status);
+    // The API always answers errors with JSON. No JSON means something else answered
+    // (the dev proxy, or another program on the API's port, such as AirPlay on a Mac).
+    if (!data) throw new ApiError(API_UNREACHABLE, response.status);
     throw new ApiError(data?.error ?? `Request failed (${response.status})`, response.status);
   }
   return data;

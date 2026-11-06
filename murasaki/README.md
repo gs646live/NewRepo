@@ -23,7 +23,7 @@ npm install                      # installs server, client and shared workspaces
 docker compose up -d db          # or point DATABASE_URL at your own Postgres
 cp server/.env.example server/.env
 npm run seed                     # load the content matrix (also happens automatically on first start)
-npm run dev                      # API on :5000, React app on :5173
+npm run dev                      # API on :3001, React app on :5173
 ```
 
 Open <http://localhost:5173>.
@@ -32,7 +32,7 @@ Open <http://localhost:5173>.
 
 ```bash
 npm run build    # builds the React app into client/dist
-npm start        # Express serves the API *and* the built app on :5000
+npm start        # Express serves the API *and* the built app on :3001
 ```
 
 Set `DATABASE_URL` (and `DATABASE_SSL=true` for most hosted Postgres providers).
@@ -55,8 +55,9 @@ data. Look at the terminal running `npm run dev`:
 - `[db] Cannot connect to PostgreSQL …`: the database isn't running. Start it with `docker compose up -d db`
   (Docker Desktop must be open), or use a PostgreSQL you already have (see below). The API keeps retrying,
   so the app starts working by itself as soon as the database is up.
-- `[api] Port 5000 is already in use`: another program is using port 5000 (on macOS, often AirPlay
-  Receiver). Set `PORT=5001` in `server/.env` and start Vite with `VITE_API_PROXY=http://localhost:5001`.
+- `[api] Port … is already in use`: another program has the API's port. Set a different `PORT` in
+  `server/.env` (the dev server picks it up automatically). On a Mac, don't use 5000: AirPlay Receiver
+  listens there, and requests to it come back as "403 Forbidden".
 - `[vite] http proxy error … ECONNREFUSED`: the API process isn't running. Scroll up for the `[api]` error.
 
 **Using PostgreSQL without Docker.** Install PostgreSQL 14+ and run these as the `postgres` superuser

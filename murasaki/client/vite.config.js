@@ -1,18 +1,18 @@
-import { defineConfig } from 'vite';
+import { fileURLToPath } from 'node:url';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
-const API_TARGET = process.env.VITE_API_PROXY ?? 'http://localhost:5000';
+export default defineConfig(({ mode }) => {
+  // Read the API's PORT from server/.env so the proxy always targets the right port.
+  const serverEnv = loadEnv(mode, fileURLToPath(new URL('../server', import.meta.url)), '');
+  const apiTarget = process.env.VITE_API_PROXY ?? `http://localhost:${serverEnv.PORT || 3001}`;
+  const proxy = { '/api': { target: apiTarget, changeOrigin: true } };
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  server: {
-    port: 5173,
+  return {
+    plugins: [react(), tailwindcss()],
     // In development the React app calls /api/... and Vite forwards it to Express.
-    proxy: { '/api': { target: API_TARGET, changeOrigin: true } },
-  },
-  preview: {
-    port: 4173,
-    proxy: { '/api': { target: API_TARGET, changeOrigin: true } },
-  },
+    server: { port: 5173, proxy },
+    preview: { port: 4173, proxy },
+  };
 });

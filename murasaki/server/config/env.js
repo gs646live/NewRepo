@@ -14,7 +14,8 @@ const bool = (value, fallback) => {
 
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
-  port: Number(process.env.PORT) || 5000,
+  // Not 5000: macOS uses that port for AirPlay Receiver.
+  port: Number(process.env.PORT) || 3001,
   databaseUrl:
     process.env.DATABASE_URL ?? 'postgres://murasaki:murasaki@localhost:5432/murasaki',
   databaseSsl: bool(process.env.DATABASE_SSL, false),
