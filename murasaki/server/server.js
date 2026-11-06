@@ -21,13 +21,26 @@ async function connectInBackground() {
       return;
     } catch (error) {
       if (attempt === 1) {
+        // A PostgreSQL answered but doesn't know us: almost always one installed on
+        // the computer rather than the Docker one.
+        const wrongServer = /(role|database) ".*" does not exist|password authentication failed/i.test(
+          dbState.lastError ?? '',
+        );
         console.error(
           [
             '',
             `[db] Cannot connect to PostgreSQL at ${redact(env.databaseUrl)}`,
             `[db]   ${dbState.lastError}`,
-            '[db]   Fix: start the database from the murasaki/ folder with  docker compose up -d db',
-            '[db]        or set DATABASE_URL in server/.env to a PostgreSQL you already run.',
+            ...(wrongServer
+              ? [
+                  "[db]   A PostgreSQL server answered, but it isn't set up for Murasaki (user, password or database).",
+                  '[db]   Use the Docker one instead (DATABASE_URL on port 5433, see server/.env.example)',
+                  '[db]   or create the user and database in yours (README → Troubleshooting).',
+                ]
+              : [
+                  '[db]   Fix: start the database from the murasaki/ folder with  docker compose up -d db',
+                  '[db]        or set DATABASE_URL in server/.env to a PostgreSQL you already run.',
+                ]),
             '[db]   The API keeps running and retries every few seconds.',
             '',
           ].join('\n'),

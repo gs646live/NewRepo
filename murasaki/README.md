@@ -15,27 +15,53 @@ glow for correct answers, a plum shake for mistakes, and an explanation every ti
 
 ## Quick start
 
-Requirements: **Node.js 22.12+** and **PostgreSQL 14+** (or Docker).
+### Option A: everything in Docker (easiest)
+
+Requirements: **Docker Desktop**, running. No Node.js or PostgreSQL needed on your computer.
+
+```bash
+cd murasaki
+docker compose up --build -d     # builds the app, starts it and its database
+```
+
+Open <http://localhost:8080>. The content is loaded automatically the first time.
+
+| Command                          | What it does                                                    |
+| -------------------------------- | --------------------------------------------------------------- |
+| `docker compose logs -f app`     | Watch the app's output                                          |
+| `docker compose up --build -d`   | Rebuild and restart after changing the code (or a `git pull`)   |
+| `docker compose down`            | Stop everything. Progress is kept in the `murasaki-data` volume |
+| `docker compose down -v`         | Stop and **delete** the database too                            |
+
+This runs the production build: change code, then rebuild. For live reloading while you work on the code,
+use option B.
+
+### Option B: develop with live reload
+
+Requirements: **Node.js 22.12+**, plus Docker for the database (or your own PostgreSQL 14+).
 
 ```bash
 cd murasaki
 npm install                      # installs server, client and shared workspaces
-docker compose up -d db          # or point DATABASE_URL at your own Postgres
+docker compose up -d db          # only the database, on localhost:5433
 cp server/.env.example server/.env
-npm run seed                     # load the content matrix (also happens automatically on first start)
 npm run dev                      # API on :3001, React app on :5173
 ```
 
-Open <http://localhost:5173>.
+Open <http://localhost:5173>. Both halves restart by themselves when you save a file.
 
 ### Production
+
+The Docker image (`Dockerfile`) is the production build: Express serves the API *and* the built React app
+on one port. To deploy it, run the image with `DATABASE_URL` pointing at your database (and
+`DATABASE_SSL=true` for most hosted Postgres providers).
+
+Without Docker:
 
 ```bash
 npm run build    # builds the React app into client/dist
 npm start        # Express serves the API *and* the built app on :3001
 ```
-
-Set `DATABASE_URL` (and `DATABASE_SSL=true` for most hosted Postgres providers).
 
 ### Scripts (run from `murasaki/`)
 
@@ -55,20 +81,26 @@ data. Look at the terminal running `npm run dev`:
 - `[db] Cannot connect to PostgreSQL …`: the database isn't running. Start it with `docker compose up -d db`
   (Docker Desktop must be open), or use a PostgreSQL you already have (see below). The API keeps retrying,
   so the app starts working by itself as soon as the database is up.
+- `role "murasaki" does not exist`: the app reached a PostgreSQL installed on your computer (usually port
+  5432) instead of the Docker one (port 5433). Set `DATABASE_URL` in `server/.env` to the 5433 line from
+  `server/.env.example`, or create the user in your own PostgreSQL (below). Or skip all this: use option A.
+- `docker compose up` says port 8080 is already allocated: change `'8080:3001'` in `docker-compose.yml`
+  to another port on the left, e.g. `'8081:3001'`, and open that port instead.
 - `[api] Port … is already in use`: another program has the API's port. Set a different `PORT` in
   `server/.env` (the dev server picks it up automatically). On a Mac, don't use 5000: AirPlay Receiver
   listens there, and requests to it come back as "403 Forbidden".
 - `[vite] http proxy error … ECONNREFUSED`: the API process isn't running. Scroll up for the `[api]` error.
 
-**Using PostgreSQL without Docker.** Install PostgreSQL 14+ and run these as the `postgres` superuser
-(`psql -U postgres`) to match the default `DATABASE_URL`:
+**Using PostgreSQL without Docker.** Install PostgreSQL 14+ and run these as a superuser (`psql postgres`
+with Homebrew on a Mac, `psql -U postgres` elsewhere):
 
 ```sql
 CREATE USER murasaki WITH PASSWORD 'murasaki';
 CREATE DATABASE murasaki OWNER murasaki;
 ```
 
-Or point `DATABASE_URL` in `server/.env` at any database you already have.
+Then set `DATABASE_URL=postgres://murasaki:murasaki@localhost:5432/murasaki` in `server/.env`. Or point
+`DATABASE_URL` at any database you already have.
 
 `GET /api/health` reports whether the database is connected, and why not if it isn't.
 
@@ -79,7 +111,8 @@ Or point `DATABASE_URL` in `server/.env` at any database you already have.
 ```
 murasaki/
 ├── package.json            npm workspaces + top-level scripts
-├── docker-compose.yml      local PostgreSQL
+├── Dockerfile              production image: builds the React app, serves it from Express
+├── docker-compose.yml      app + PostgreSQL (or just the database, for npm run dev)
 ├── shared/                 code used by both server and client
 │   ├── constants.js        modes, levels, completion threshold
 │   ├── romaji.js           Hepburn/Kunrei-tolerant romaji matching
