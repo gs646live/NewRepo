@@ -1,0 +1,27 @@
+{
+  "name": "murasaki",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Murasaki (紫) — an immersive Japanese learning app for Hiragana, Katakana and Kanji.",
+  "workspaces": [
+    "shared",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,blue \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w client",
+    "start": "npm run start -w server",
+    "seed": "npm run seed -w server",
+    "test": "npm test -w shared && npm test -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}
