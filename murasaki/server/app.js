@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
 import { env } from './config/env.js';
-import { sequelize } from './config/db.js';
+import { dbState, sequelize } from './config/db.js';
 import lessonRoutes from './routes/lessonRoutes.js';
 import progressRoutes from './routes/progressRoutes.js';
 import { errorHandler, notFound } from './middleware/errors.js';
@@ -21,11 +21,24 @@ export function createApp({ serveClient = true } = {}) {
 
   app.get('/api/health', async (req, res) => {
     try {
+      if (!dbState.ready) throw new Error(dbState.lastError ?? 'not connected yet');
       await sequelize.authenticate();
       res.json({ status: 'ok', database: 'connected' });
-    } catch {
-      res.status(503).json({ status: 'degraded', database: 'unreachable' });
+    } catch (error) {
+      res.status(503).json({ status: 'degraded', database: 'unreachable', detail: error.message });
     }
+  });
+
+  // Until PostgreSQL is reachable, answer with an explanation instead of crashing.
+  app.use('/api', (req, res, next) => {
+    if (dbState.ready) return next();
+    res.status(503).json({
+      code: 'DB_UNAVAILABLE',
+      error:
+        'The Murasaki API is running but cannot reach its PostgreSQL database. ' +
+        'Start it from the murasaki folder with "docker compose up -d db" (or fix DATABASE_URL in server/.env), ' +
+        'then try again.',
+    });
   });
 
   app.use('/api/lessons', lessonRoutes);

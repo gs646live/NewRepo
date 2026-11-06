@@ -1,31 +1,65 @@
 import { env } from './config/env.js';
-import { connectDB, disconnectDB } from './config/db.js';
+import { connectDB, dbState, disconnectDB, redact } from './config/db.js';
 import { seedIfEmpty } from './seed/seed.js';
 import { createApp } from './app.js';
 
-async function start() {
-  await connectDB();
-  console.info('[db] connected to PostgreSQL');
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  if (env.autoSeed) await seedIfEmpty();
-
-  const app = createApp();
-  const server = app.listen(env.port, () => {
-    console.info(`[api] 紫 Murasaki API listening on http://localhost:${env.port}`);
-  });
-
-  const shutdown = (signal) => {
-    console.info(`[api] ${signal} received, shutting down`);
-    server.close(async () => {
-      await disconnectDB().catch(() => {});
-      process.exit(0);
-    });
-  };
-  process.on('SIGINT', shutdown);
-  process.on('SIGTERM', shutdown);
+/**
+ * Keep trying to reach PostgreSQL. The API stays up meanwhile and answers
+ * with a clear 503 message, so the web app can say what's wrong instead of
+ * failing with a bare proxy error.
+ */
+async function connectInBackground() {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      // Only accept API requests once the tables exist and the content is seeded.
+      await connectDB({ retries: 1, markReady: false });
+      if (env.autoSeed) await seedIfEmpty();
+      dbState.ready = true;
+      console.info('[db] connected to PostgreSQL — ready');
+      return;
+    } catch (error) {
+      if (attempt === 1) {
+        console.error(
+          [
+            '',
+            `[db] Cannot connect to PostgreSQL at ${redact(env.databaseUrl)}`,
+            `[db]   ${dbState.lastError}`,
+            '[db]   Fix: start the database from the murasaki/ folder with  docker compose up -d db',
+            '[db]        or set DATABASE_URL in server/.env to a PostgreSQL you already run.',
+            '[db]   The API keeps running and retries every few seconds.',
+            '',
+          ].join('\n'),
+        );
+      } else if (attempt % 10 === 0) {
+        console.warn(`[db] still waiting for PostgreSQL (${dbState.lastError})`);
+      }
+      await sleep(Math.min(3000 * attempt, 15000));
+    }
+  }
 }
 
-start().catch((error) => {
-  console.error('[api] failed to start:', error.message);
+const app = createApp();
+const server = app.listen(env.port, () => {
+  console.info(`[api] 紫 Murasaki API listening on http://localhost:${env.port}`);
+  connectInBackground().catch((error) => console.error('[db] setup failed:', error.message));
+});
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`[api] Port ${env.port} is already in use. Stop the other process or set PORT in server/.env.`);
+  } else {
+    console.error('[api] failed to start:', error.message);
+  }
   process.exit(1);
 });
+
+const shutdown = (signal) => {
+  console.info(`[api] ${signal} received, shutting down`);
+  server.close(async () => {
+    await disconnectDB().catch(() => {});
+    process.exit(0);
+  });
+};
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);

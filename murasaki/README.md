@@ -47,6 +47,30 @@ Set `DATABASE_URL` (and `DATABASE_SSL=true` for most hosted Postgres providers).
 | `npm run build` / `npm start`| Production build / serve                                |
 | `npm test`                   | Shared unit tests + server tests (needs Postgres, see below) |
 
+### Troubleshooting
+
+**The page loads but every link shows "Something went wrong".** The React app is up but the API can't serve
+data. Look at the terminal running `npm run dev`:
+
+- `[db] Cannot connect to PostgreSQL …`: the database isn't running. Start it with `docker compose up -d db`
+  (Docker Desktop must be open), or use a PostgreSQL you already have (see below). The API keeps retrying,
+  so the app starts working by itself as soon as the database is up.
+- `[api] Port 5000 is already in use`: another program is using port 5000 (on macOS, often AirPlay
+  Receiver). Set `PORT=5001` in `server/.env` and start Vite with `VITE_API_PROXY=http://localhost:5001`.
+- `[vite] http proxy error … ECONNREFUSED`: the API process isn't running. Scroll up for the `[api]` error.
+
+**Using PostgreSQL without Docker.** Install PostgreSQL 14+ and run these as the `postgres` superuser
+(`psql -U postgres`) to match the default `DATABASE_URL`:
+
+```sql
+CREATE USER murasaki WITH PASSWORD 'murasaki';
+CREATE DATABASE murasaki OWNER murasaki;
+```
+
+Or point `DATABASE_URL` in `server/.env` at any database you already have.
+
+`GET /api/health` reports whether the database is connected, and why not if it isn't.
+
 ---
 
 ## Project structure
