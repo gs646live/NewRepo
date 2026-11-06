@@ -1,7 +1,24 @@
-# Local PostgreSQL for Murasaki. Start it with:
-#   docker compose up -d db
-# The credentials match server/.env.example.
+# Murasaki with Docker.
+#
+#   docker compose up --build -d     the whole app → http://localhost:8080
+#   docker compose up -d db          only PostgreSQL, for `npm run dev`
+#   docker compose down              stop (your data is kept in the murasaki-data volume)
 services:
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PORT: 3001
+      # "db" is the database container's name on the compose network.
+      DATABASE_URL: postgres://murasaki:murasaki@db:5432/murasaki
+      AUTO_SEED: 'true'
+    ports:
+      # 8080 on your computer → 3001 in the container. Change the left side if 8080 is taken.
+      - '8080:3001'
+
   db:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -10,7 +27,9 @@ services:
       POSTGRES_PASSWORD: murasaki
       POSTGRES_DB: murasaki
     ports:
-      - '5432:5432'
+      # Published on 5433, not 5432, so it never clashes with a PostgreSQL installed on your
+      # computer. Only `npm run dev` uses this; the app container talks to db:5432 directly.
+      - '127.0.0.1:5433:5432'
     volumes:
       - murasaki-data:/var/lib/postgresql/data
     healthcheck:

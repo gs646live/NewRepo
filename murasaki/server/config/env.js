@@ -14,9 +14,12 @@ const bool = (value, fallback) => {
 
 export const env = {
   nodeEnv: process.env.NODE_ENV ?? 'development',
-  port: Number(process.env.PORT) || 5000,
+  // Not 5000: macOS uses that port for AirPlay Receiver.
+  port: Number(process.env.PORT) || 3001,
+  // 5433 = the Docker database from docker-compose.yml (kept off 5432 so it can't
+  // clash with a PostgreSQL installed on the computer).
   databaseUrl:
-    process.env.DATABASE_URL ?? 'postgres://murasaki:murasaki@localhost:5432/murasaki',
+    process.env.DATABASE_URL ?? 'postgres://murasaki:murasaki@localhost:5433/murasaki',
   databaseSsl: bool(process.env.DATABASE_SSL, false),
   autoSeed: bool(process.env.AUTO_SEED, true),
   clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',

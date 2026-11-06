@@ -9,7 +9,7 @@ process.env.DATABASE_URL =
   process.env.TEST_DATABASE_URL ?? 'postgres://murasaki:murasaki@localhost:5432/murasaki_test';
 process.env.DB_LOGGING = 'false';
 
-const { sequelize, disconnectDB } = await import('../config/db.js');
+const { sequelize, connectDB, dbState, disconnectDB } = await import('../config/db.js');
 await import('../models/index.js');
 const { seedItems } = await import('../seed/seed.js');
 const { createApp } = await import('../app.js');
@@ -17,7 +17,7 @@ const { default: request } = await import('supertest');
 
 let reachable = true;
 try {
-  await sequelize.authenticate();
+  await connectDB({ retries: 1 });
 } catch (error) {
   reachable = false;
   console.warn(`[api.test] skipping: test database unreachable (${error.message})`);
@@ -82,6 +82,19 @@ describe('Murasaki API', { skip: !reachable }, () => {
     await request(app).get('/api/lessons/kanji/master').expect(400);
     await request(app).get('/api/lessons/kanji/expert?count=-1').expect(400);
     await request(app).get('/api/lessons/kanji/expert?seed=abc').expect(400);
+  });
+
+  test('while the database is unavailable the API explains what to do', async () => {
+    dbState.ready = false;
+    try {
+      const res = await request(app).get('/api/lessons/hiragana/beginner').expect(503);
+      assert.equal(res.body.code, 'DB_UNAVAILABLE');
+      assert.match(res.body.error, /docker compose up -d db/);
+      const health = await request(app).get('/api/health').expect(503);
+      assert.equal(health.body.database, 'unreachable');
+    } finally {
+      dbState.ready = true;
+    }
   });
 
   test('unknown API routes return JSON 404', async () => {
