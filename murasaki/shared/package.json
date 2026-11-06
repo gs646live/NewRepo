@@ -1,0 +1,15 @@
+{
+  "name": "@murasaki/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Code shared by the Murasaki server and client (romaji matching, kana helpers, constants).",
+  "type": "module",
+  "exports": {
+    "./constants": "./constants.js",
+    "./romaji": "./romaji.js",
+    "./kana": "./kana.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
